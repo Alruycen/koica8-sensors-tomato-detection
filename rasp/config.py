@@ -48,3 +48,5 @@ MODEL_CONFIG = {
     "model_name": os.getenv("MODEL_NAME", ""),  # HF Hub
     "target_size": 320,
 }
+
+API_ENDPOINT = os.getenv("API_ENDPOINT", "")  # HF Spaces API URL

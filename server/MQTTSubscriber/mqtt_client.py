@@ -3,7 +3,7 @@ import requests
 import json
 
 class MQTTSubscriber:
-    def __init__(self, broker_host, api_endpoint, broker_port=1883,):
+    def __init__(self, broker_host, broker_port, api_endpoint, topic="tomato/predictions"):
         """
         Args:
             broker_host (str): MQTT broker address (e.g., "192.168.1.100" or "localhost")
@@ -17,11 +17,12 @@ class MQTTSubscriber:
         self.broker_host = broker_host
         self.broker_port = broker_port
         self.api_endpoint = api_endpoint
+        self.topic = topic
     
     def on_connect(self, client, userdata, flags, rc):
         if rc == 0:
             print(f"Connected to MQTT broker {self.broker_host}")
-            self.client.subscribe("tomato/predictions")
+            self.client.subscribe(self.topic)
             print("Subscribed to tomato/predictions")
         else:
             print(f"Connection failed with code {rc}")
@@ -48,7 +49,7 @@ class MQTTSubscriber:
             print(f"Class: {payload['class_name']} ({payload['confidence']:.2%})")
             
             # Forward to HF Spaces API
-            self.forward_to_api(payload) # API buatan Jason
+            # self.forward_to_api(payload) # pakai API buatan Jason
         
         except json.JSONDecodeError:
             print(f"Invalid JSON received: {msg.payload}")
@@ -81,3 +82,26 @@ class MQTTSubscriber:
     def disconnect(self):
         self.client.loop_stop()
         self.client.disconnect()
+        
+def main():
+    # Example usage
+    mqtt_subscriber = MQTTSubscriber(
+        broker_host="emqx.broker.io",
+        broker_port=1883,
+        api_endpoint="https://example.com/api/tomato_predictions",
+        topic="tomato/test"
+    )
+    
+    if mqtt_subscriber.connect():
+        print("System ready! Listening for tomato predictions...\n")
+        try:
+            while True:
+                pass  # Keep the script running
+        except KeyboardInterrupt:
+            print("\n\n⏹ Shutting down...")
+            mqtt_subscriber.disconnect()
+            print("✓ Disconnected")
+            
+    
+if __name__ == "__main__":
+    pass # ganti main() kalau mau coba langsung

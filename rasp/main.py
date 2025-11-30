@@ -10,7 +10,8 @@ from CameraHandler.camera_handler import CameraHandler
 from ModelLoader.load_model import load_tomato_model
 from ModelLoader.preprocess import preprocess_tomato_image
 from MQTTPublisher import MQTTPublisher
-from config import MQTT_CONFIG, ARDUINO_CONFIG, TOMATO_CLASSES, SERVO_ACTIONS, MODEL_CONFIG, DEVICE_ID
+from config import MQTT_CONFIG, ARDUINO_CONFIG, TOMATO_CLASSES, SERVO_ACTIONS, MODEL_CONFIG, DEVICE_ID, API_ENDPOINT
+from API.api_request import send_prediction_to_api
 
 def get_servo_action(class_idx):
     """Map class to servo action"""
@@ -87,6 +88,9 @@ def main():
             
             # Step 6: Publish to MQTT
             mqtt_pub.publish_message(prediction_payload)
+            
+            # or, directly to API
+            # send_prediction_to_api(prediction_payload, API_ENDPOINT)
             
             # Step 7: Control servo
             print(f"🎯 Class: {class_name} | Confidence: {confidence:.2%} | Servo: Box {class_idx + 1}")

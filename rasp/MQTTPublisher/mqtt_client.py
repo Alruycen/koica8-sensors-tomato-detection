@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 import json
 
 class MQTTPublisher:
-    def __init__(self, broker_url, broker_port=1883):
+    def __init__(self, broker_url, broker_port, topic="tomato/predictions"):
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
@@ -10,6 +10,7 @@ class MQTTPublisher:
         
         self.broker_url = broker_url
         self.broker_port = broker_port
+        self.topic = topic
     
     def on_connect(self, client, userdata, flags, rc):
         if rc == 0:
@@ -45,13 +46,12 @@ class MQTTPublisher:
             }
         """
         try:
-            topic = "tomato/predictions"
             payload = json.dumps(prediction_data)
             
-            result = self.client.publish(topic, payload)
+            result = self.client.publish(self.topic, payload)
             
             if result[0] == 0:
-                print(f"Published to {topic}: {prediction_data}")
+                print(f"Published to {self.topic}: {prediction_data}")
                 return True
             else:
                 print(f"Publish failed: {result.rc}")
@@ -64,3 +64,26 @@ class MQTTPublisher:
     def disconnect(self):
         self.client.loop_stop()
         self.client.disconnect()
+        
+def main():
+    # Example usage
+    mqtt_publisher = MQTTPublisher(
+        broker_url="emqx.broker.io", 
+        broker_port=1883, 
+        topic="tomato/test"
+    )
+    
+    if mqtt_publisher.connect():
+        sample_prediction = {
+            "tomato_id": "tm_123456789_001",
+            "device_id": "raspberry_pi_01",
+            "class": 0,
+            "class_name": "unripe",
+            "confidence": 0.95,
+            "rasp_timestamp": "2025-01-01T12:00:00Z",
+        }
+        mqtt_publisher.publish_message(sample_prediction)
+        mqtt_publisher.disconnect()
+        
+if __name__ == "__main__":
+    pass # ganti main() kalau mau coba langsung
