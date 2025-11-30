@@ -1,4 +1,4 @@
-# koica8-tomato-detection-sensors
+# KSU4IRTC UMN Batch 8 Group A - Implementasi Sorting Tomat
 
 ## Pengantar
 
