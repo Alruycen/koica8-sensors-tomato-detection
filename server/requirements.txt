@@ -1,0 +1,9 @@
+# Communication
+paho-mqtt==1.6.1
+requests==2.31.0
+
+# Configuration
+python-dotenv==1.0.0
+
+# Data (optional, for local logging)
+pandas==2.1.3
